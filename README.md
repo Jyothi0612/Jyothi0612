@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img src="assets/banner-light.svg" alt="jyothi@stockholm: software engineer with 8 years in production, now DevOps. I build servers by hand, automate them, then break them on purpose. Open to DevOps, platform and SRE roles in Stockholm." width="100%">
+  <img src="assets/banner-light.svg" alt="jyothi@stockholm: software engineer with 8 years in production, now DevOps. I build servers by hand, then automate them. Open to DevOps, platform and SRE roles in Stockholm." width="100%">
 </picture>
 
 [LinkedIn](https://linkedin.com/in/siva-jyothi-pamarthy-14622547) · [Email](mailto:jyothipamarthy@gmail.com) · Stockholm, Sweden
