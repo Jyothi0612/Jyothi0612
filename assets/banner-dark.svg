@@ -5,7 +5,7 @@
 <circle cx="24" cy="21" r="6" fill="#ff5f57"/><circle cx="44" cy="21" r="6" fill="#febc2e"/><circle cx="64" cy="21" r="6" fill="#28c840"/>
 <text x="450" y="26" text-anchor="middle" fill="#8b93a1" style="font-size:13px">jyothi@stockholm — zsh</text>
 <text x="32" y="92"><tspan fill="#ff7a59">jyothi@stockholm</tspan><tspan fill="#8b93a1">:~</tspan><tspan fill="#e6e6e6"> $ whoami</tspan></text>
-<text x="32" y="122" fill="#e6e6e6">Siva Jyothi Pamarthy · software engineer, 8 yrs in production → DevOps</text>
+<text x="32" y="122" fill="#e6e6e6">Siva Jyothi Pamarthy · software engineer since 2014 → DevOps</text>
 <text x="32" y="162"><tspan fill="#ff7a59">jyothi@stockholm</tspan><tspan fill="#8b93a1">:~</tspan><tspan fill="#e6e6e6"> $ cat motto</tspan></text>
 <text x="32" y="192" fill="#ff7a59">I build servers by hand, then automate them.</text>
 <text x="32" y="232"><tspan fill="#ff7a59">jyothi@stockholm</tspan><tspan fill="#8b93a1">:~</tspan><tspan fill="#e6e6e6"> $ systemctl status career</tspan></text>
