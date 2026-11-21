@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
-  <img src="assets/banner-light.svg" alt="jyothi@stockholm: 8 years frontend in production, now DevOps. I build servers by hand, automate them, then break them on purpose. Open to DevOps, platform and SRE roles in Stockholm." width="100%">
+  <img src="assets/banner-light.svg" alt="jyothi@stockholm: software engineer with 8 years in production, now DevOps. I build servers by hand, automate them, then break them on purpose. Open to DevOps, platform and SRE roles in Stockholm." width="100%">
 </picture>
 
 [LinkedIn](https://linkedin.com/in/siva-jyothi-pamarthy-14622547) · [Email](mailto:jyothipamarthy@gmail.com) · Stockholm, Sweden
@@ -60,7 +60,7 @@ Things that broke on me, written up the way a postmortem would be.
 │               Docker Compose                                              [production]
 ├── observe/    Sentry                                                      [production]
 │               journalctl                                                  [built]
-├── frontend/   TypeScript · Vue                                            [production]
+├── web/        TypeScript · Vue · REST APIs                                [production]
 └── next/       Kubernetes · CI/CD pipelines · Prometheus                  [learning]
 
 production = used at work · built = in my own repos · learning = in progress
@@ -72,6 +72,5 @@ production = used at work · built = in my own repos · learning = in progress
 2026      DevOps on AWS: Linux → shell → Ansible → Terraform, all built by hand first
 2021–26   Frontend Developer · online gaming, 5 brands × 6 licensed markets
           live outage hotfix · pen-test XSS fix · Mercurial → Git/GitLab + CI · Docker Compose dev stack
-2019–21   career break: moved to Sweden
-2014–19   Software Engineer · Hyderabad
+2014–19   Software Engineer · web apps across frontend, backend and databases
 ```
