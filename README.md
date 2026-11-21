@@ -19,36 +19,6 @@ copy-paste scripts      shared common.sh        one playbook/service      reusab
 ```
 [shell v1](https://github.com/Jyothi0612/shell-roboshop-v1) · [shell v2](https://github.com/Jyothi0612/shell-roboshop-v2) · [ansible v1](https://github.com/Jyothi0612/roboshop-ansible-v1) · [ansible v2](https://github.com/Jyothi0612/roboshop-ansible-v2) · [dynamic inventory](https://github.com/Jyothi0612/ansible-dynamic-inventory) · [terraform](https://github.com/Jyothi0612/learn-terraform)
 
-### `$ journalctl -p err --since "this year"`
-
-Things that broke on me, written up the way a postmortem would be.
-
-<details>
-<summary><b>terraform apply hung for 5 minutes, then the server was "tainted"</b></summary>
-
-- **Symptom:** `remote-exec` retried SSH with a password until it timed out. The next plan said 1 to add, 1 to destroy.
-- **Checked:** `nc -z <ip> 22` was open, so it wasn't the network. `ssh -o PreferredAuthentications=none` showed only `publickey` was allowed.
-- **Cause:** the official RHEL 9 image turns password login off. The training image had a password.
-- **Fix:** an SSH key in the `connection` block.
-- **Learned:** if a creation-time provisioner fails, the resource is marked tainted and the next apply replaces it. `terraform apply -replace` does the same on purpose.
-</details>
-
-<details>
-<summary><b>The script worked in my terminal, then cron ran it</b></summary>
-
-- **Symptom:** the nightly log-archive job never archived anything, but it still exited 0.
-- **Cause:** cron runs with `PATH=/usr/bin:/bin`. Writing `PATH=$PATH:...` in a crontab made things worse, because cron doesn't expand variables.
-- **Fix:** write `PATH` out in full, use full paths, and log with `>> /var/log/archive.log 2>&1`.
-- **Learned:** test a job the way cron runs it: `env -i PATH=/usr/bin:/bin /bin/sh -c '…'`
-</details>
-
-<details>
-<summary><b>tar: "Cannot connect to logs-2026-10-23-02: resolve failed"</b></summary>
-
-- **Cause:** `date +%F-%T` puts colons in the file name, and tar reads `name:path` as `host:path`.
-- **Fix:** `date +%Y-%m-%d-%H-%M-%S`
-</details>
-
 ### `$ tree ~/stack`
 
 ```text
