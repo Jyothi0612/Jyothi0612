@@ -1,104 +1,77 @@
-# 👋 Hi, I'm Siva Jyothi Pamarthy
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner-dark.svg">
+  <img src="assets/banner-light.svg" alt="jyothi@stockholm: 8 years frontend in production, now DevOps. I build servers by hand, automate them, then break them on purpose. Open to DevOps, platform and SRE roles in Stockholm." width="100%">
+</picture>
 
-### DevOps Engineer in the making | Linux | Shell | Ansible | Terraform | AWS
+[LinkedIn](https://linkedin.com/in/siva-jyothi-pamarthy-14622547) · [Email](mailto:jyothipamarthy@gmail.com) · Stockholm, Sweden
 
-Software engineer in Stockholm moving from frontend into **DevOps**. I shipped production web apps for 8 years, the last 4 on a regulated online gaming platform (5 brands, 6 licensed markets).
+### `$ ls ~/work --sort=proof`
 
-Now I work on the other side of the deploy: **I build servers by hand, automate them, then break them on purpose**, and write down every failure and how I fixed it.
-
----
-
-## 🛠️ Technical Skills
-
-| Category | Technologies |
+| Repo | What it proves |
 |---|---|
-| Linux | RHEL 9 / Rocky, Bash, systemd, nginx, cron, SSH |
-| Configuration Management | Ansible (playbooks, roles, dynamic inventory) |
-| Infrastructure as Code | Terraform (state, variables, provisioners) |
-| Cloud | AWS (EC2, Route 53, Security Groups) |
-| Containers | Docker, Docker Compose |
-| Version Control & CI | Git, GitLab, GitLab CI, GitHub Actions |
-| Monitoring | Sentry, journalctl |
-| Frontend | TypeScript, Vue, React |
-| Learning now | Kubernetes, Prometheus |
+| **[devops-by-breaking](https://github.com/Jyothi0612/devops-by-breaking)** | I can debug, and I can design checks. 20 break-fix labs (disk full, 502s, CrashLoopBackOff), each one tested in CI on amd64 + arm64 to start broken and be fixable. |
+| **[fika-stockholm](https://github.com/Jyothi0612/fika-stockholm)** | I can run many servers by hand. 11 RHEL 9 EC2 servers, Route 53 private DNS, locked-down security groups, every service its own user under systemd. |
+| **one shop, automated 3 ways** | I know *why* we automate. The same 10-service app deployed again and again, each version fixing what hurt in the last one. |
 
----
+```text
+shell-roboshop-v1  ──▶  shell-roboshop-v2  ──▶  roboshop-ansible-v1  ──▶  roboshop-ansible-v2  ──▶  learn-terraform
+copy-paste scripts      shared common.sh        one playbook/service      reusable roles            the servers too
+```
+[shell v1](https://github.com/Jyothi0612/shell-roboshop-v1) · [shell v2](https://github.com/Jyothi0612/shell-roboshop-v2) · [ansible v1](https://github.com/Jyothi0612/roboshop-ansible-v1) · [ansible v2](https://github.com/Jyothi0612/roboshop-ansible-v2) · [dynamic inventory](https://github.com/Jyothi0612/ansible-dynamic-inventory) · [terraform](https://github.com/Jyothi0612/learn-terraform)
 
-## 🚀 Featured Projects
+### `$ journalctl -p err --since "this year"`
 
-**1. [devops-by-breaking](https://github.com/Jyothi0612/devops-by-breaking)**
-- 20 break-fix labs named after the error you'd see: "disk full, du says empty", "site returns 502", "pod in CrashLoopBackOff".
-- Every lab starts broken on a laptop; a checker proves it was really fixed. CI tests each lab on amd64 + arm64.
-- Runtimes: Rocky Linux with systemd, Docker, k3s, Terraform and Ansible.
+Things that broke on me, written up the way a postmortem would be.
 
-**2. [Fika Stockholm](https://github.com/Jyothi0612/fika-stockholm)**
-- A microservices café-ordering app deployed by hand on 11 RHEL 9 EC2 servers, one per component.
-- Route 53 private DNS, security groups that only allow server-to-server traffic, every service under systemd as its own user.
-- Shell scripts rebuild any server from zero.
+<details>
+<summary><b>terraform apply hung for 5 minutes, then the server was "tainted"</b></summary>
 
-**3. One shop, automated three ways**
-- The same 10-service app deployed with shell scripts, then Ansible, then Terraform. Each version fixes what hurt in the one before.
-- Shell: [v1](https://github.com/Jyothi0612/shell-roboshop-v1) · [v2](https://github.com/Jyothi0612/shell-roboshop-v2) | Ansible: [v1](https://github.com/Jyothi0612/roboshop-ansible-v1) · [v2](https://github.com/Jyothi0612/roboshop-ansible-v2) · [dynamic inventory](https://github.com/Jyothi0612/ansible-dynamic-inventory) | Terraform: [learn-terraform](https://github.com/Jyothi0612/learn-terraform)
+- **Symptom:** `remote-exec` retried SSH with a password until it timed out. The next plan said 1 to add, 1 to destroy.
+- **Checked:** `nc -z <ip> 22` was open, so it wasn't the network. `ssh -o PreferredAuthentications=none` showed only `publickey` was allowed.
+- **Cause:** the official RHEL 9 image turns password login off. The training image had a password.
+- **Fix:** an SSH key in the `connection` block.
+- **Learned:** if a creation-time provisioner fails, the resource is marked tainted and the next apply replaces it. `terraform apply -replace` does the same on purpose.
+</details>
 
----
+<details>
+<summary><b>The script worked in my terminal, then cron ran it</b></summary>
 
-## 🔥 Incidents I Debugged
+- **Symptom:** the nightly log-archive job never archived anything, but it still exited 0.
+- **Cause:** cron runs with `PATH=/usr/bin:/bin`. Writing `PATH=$PATH:...` in a crontab made things worse, because cron doesn't expand variables.
+- **Fix:** write `PATH` out in full, use full paths, and log with `>> /var/log/archive.log 2>&1`.
+- **Learned:** test a job the way cron runs it: `env -i PATH=/usr/bin:/bin /bin/sh -c '…'`
+</details>
 
-**terraform apply hung, then the server was "tainted"**
-`remote-exec` kept retrying SSH and timed out. `nc -z <ip> 22` was open, so not the network. The official RHEL 9 image only allows key login. A failed creation-time provisioner taints the resource, so the next plan replaced it.
+<details>
+<summary><b>tar: "Cannot connect to logs-2026-10-23-02: resolve failed"</b></summary>
 
-**The script worked in my terminal, then cron ran it**
-Cron runs with a minimal `PATH`, and it doesn't expand `$PATH` in the crontab. Fix: full paths and logging with `>> /var/log/archive.log 2>&1`. Now I test jobs with `env -i PATH=/usr/bin:/bin /bin/sh -c '…'`.
+- **Cause:** `date +%F-%T` puts colons in the file name, and tar reads `name:path` as `host:path`.
+- **Fix:** `date +%Y-%m-%d-%H-%M-%S`
+</details>
 
-**tar: "Cannot connect to logs-2026-10-23-02: resolve failed"**
-A timestamp from `date +%F-%T` put colons in the file name, and tar reads `name:path` as a remote host. Fix: `date +%Y-%m-%d-%H-%M-%S`.
+### `$ tree ~/stack`
 
----
+```text
+~/stack
+├── linux/      RHEL 9 · Rocky · Bash · systemd · nginx · cron · ssh        [built]
+├── automate/   Ansible · Terraform                                         [built]
+│               Git · GitLab · GitLab CI                                    [production]
+├── cloud/      AWS EC2 · Route 53 · security groups                        [built]
+│               Docker Compose                                              [production]
+├── observe/    Sentry                                                      [production]
+│               journalctl                                                  [built]
+├── frontend/   TypeScript · Vue                                            [production]
+└── next/       Kubernetes · CI/CD pipelines · Prometheus                  [learning]
 
-## 📊 GitHub Statistics
+production = used at work · built = in my own repos · learning = in progress
+```
 
-<p align="center">
-  <img src="https://github-stats-extended.vercel.app/api?username=Jyothi0612&show_icons=true&theme=tokyonight&hide_border=true&cache_seconds=86400&include_all_commits=true" alt="GitHub Statistics" />
-</p>
+### `$ git log --oneline career`
 
-<p align="center">
-  <img src="https://github-stats-extended.vercel.app/api/top-langs/?username=Jyothi0612&layout=compact&theme=tokyonight&hide_border=true&cache_seconds=86400" alt="Top Languages" />
-</p>
-
----
-
-## 🐍 GitHub Contributions
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Jyothi0612/Jyothi0612/output/github-snake-dark.svg" alt="GitHub Contribution Snake" />
-</p>
-
----
-
-## 🔥 GitHub Streak
-
-<p align="center">
-  <img src="https://streak-stats.demolab.com?user=Jyothi0612&theme=tokyonight&hide_border=true" alt="GitHub Contribution Streak" />
-</p>
-
----
-
-## 🤝 Connect With Me
-
-<p align="left">
-  <a href="https://linkedin.com/in/siva-jyothi-pamarthy-14622547">
-    <img src="https://img.shields.io/badge/LinkedIn-Connect-blue?style=for-the-badge&logo=linkedin" alt="LinkedIn"/>
-  </a>
-  <a href="mailto:jyothipamarthy@gmail.com">
-    <img src="https://img.shields.io/badge/Email-Contact-red?style=for-the-badge&logo=gmail" alt="Email"/>
-  </a>
-  <a href="https://github.com/Jyothi0612">
-    <img src="https://img.shields.io/badge/GitHub-Follow-black?style=for-the-badge&logo=github" alt="GitHub"/>
-  </a>
-</p>
-
----
-
-**🐧 Linux | ⚙️ Automation | ☁️ AWS | 🔧 Break-fix**
-
-*Open to DevOps, platform and SRE roles in Stockholm, hybrid or remote.*
+```text
+2026      DevOps on AWS: Linux → shell → Ansible → Terraform, all built by hand first
+2021–26   Frontend Developer · online gaming, 5 brands × 6 licensed markets
+          live outage hotfix · pen-test XSS fix · Mercurial → Git/GitLab + CI · Docker Compose dev stack
+2019–21   career break: moved to Sweden
+2014–19   Software Engineer · Hyderabad
+```
